@@ -934,6 +934,14 @@ class ServerOptions(Options):
             serverurl = None
         depends_on = get(section, 'depends_on', None)
         spawn_timeout = int(get(section, 'spawn_timeout', 60))
+        runningregex = get(section, 'runningregex', None)
+        if runningregex:
+            try:
+                runningregex = re.compile(runningregex)
+            except Exception as e:
+                raise ValueError(
+                    f"program section {section} has invalid runningregex value. Error {e}")
+
 
         # find uid from "user" option
         user = get(section, 'user', None)
@@ -1062,6 +1070,8 @@ class ServerOptions(Options):
                 serverurl=serverurl,
                 depends_on=depends_on,
                 spawn_timeout=spawn_timeout,
+                serverurl=serverurl,
+                runningregex=runningregex
             )
 
             programs.append(pconfig)
@@ -1881,7 +1891,7 @@ class ProcessConfig(Config):
         'stopsignal', 'stopwaitsecs', 'stopasgroup', 'killasgroup',
         'exitcodes', 'redirect_stderr' ]
     optional_param_names = [ 'environment', 'serverurl',
-        'depends_on', 'spawn_timeout' ]
+        'depends_on', 'spawn_timeout', 'runningregex' ]
 
     def __init__(self, options, **params):
         self.options = options
