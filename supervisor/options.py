@@ -1070,7 +1070,6 @@ class ServerOptions(Options):
                 serverurl=serverurl,
                 depends_on=depends_on,
                 spawn_timeout=spawn_timeout,
-                serverurl=serverurl,
                 runningregex=runningregex
             )
 
