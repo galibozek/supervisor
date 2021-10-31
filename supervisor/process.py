@@ -6,6 +6,7 @@ import shlex
 import time
 import traceback
 import re
+import requests
 
 from supervisor.compat import maxint
 from supervisor.compat import as_bytes
@@ -709,7 +710,7 @@ class Subprocess(object):
 
         processname = as_string(self.config.name)
         if state == ProcessStates.STARTING:
-            if now - self.laststart > self.config.startsecs and not self.config.runningregex:
+            if now - self.laststart > self.config.startsecs and not self.config.readiness_url and not self.config.runningregex:
                 # STARTING -> RUNNING if the proc has started
                 # successfully and it has stayed up for at least
                 # proc.config.startsecs,
@@ -721,6 +722,21 @@ class Subprocess(object):
                     'entered RUNNING state, process has stayed up for '
                     '> than %s seconds (startsecs)' % self.config.startsecs)
                 logger.info('success: %s %s' % (processname, msg))
+
+            if self.config.readiness_url:
+                readiness_url = self.config.readiness_url
+                try:
+                    status_code = requests.get(readiness_url).status_code
+                except:
+                    status_code = None
+
+                if status_code == 200:
+                    self.delay = 0
+                    self.backoff = 0
+                    self._assertInState(ProcessStates.STARTING)
+                    self.change_state(ProcessStates.RUNNING)
+                    msg = ('entered RUNNING state, {} is ready'.format(readiness_url))
+                    logger.info('success: %s %s' % (processname, msg))
 
             if self.config.runningregex:
                 logfile = getattr(self.config, 'stdout_logfile')
