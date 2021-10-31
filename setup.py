@@ -23,7 +23,7 @@ elif (3, 0) < py_version < (3, 4):
     raise RuntimeError('On Python 3, Supervisor requires Python 3.4 or later')
 
 # pkg_resource is used in several places
-requires = ["setuptools", "requests"]
+requires = ["setuptools"]
 tests_require = []
 if py_version < (3, 3):
     tests_require.append('mock<4.0.0.dev0')

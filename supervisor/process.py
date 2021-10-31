@@ -6,7 +6,7 @@ import shlex
 import time
 import traceback
 import re
-import requests
+import urllib.request
 
 from supervisor.compat import maxint
 from supervisor.compat import as_bytes
@@ -726,7 +726,7 @@ class Subprocess(object):
             if self.config.readiness_url:
                 readiness_url = self.config.readiness_url
                 try:
-                    status_code = requests.get(readiness_url).status_code
+                    status_code = urllib.request.urlopen(readiness_url, timeout=1).status
                 except:
                     status_code = None
 
