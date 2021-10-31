@@ -934,6 +934,7 @@ class ServerOptions(Options):
             serverurl = None
         depends_on = get(section, 'depends_on', None)
         spawn_timeout = int(get(section, 'spawn_timeout', 60))
+        readiness_url = get(section, 'readiness_url', None)
         runningregex = get(section, 'runningregex', None)
         if runningregex:
             try:
@@ -941,7 +942,6 @@ class ServerOptions(Options):
             except Exception as e:
                 raise ValueError(
                     f"program section {section} has invalid runningregex value. Error {e}")
-
 
         # find uid from "user" option
         user = get(section, 'user', None)
@@ -1070,6 +1070,7 @@ class ServerOptions(Options):
                 serverurl=serverurl,
                 depends_on=depends_on,
                 spawn_timeout=spawn_timeout,
+                readiness_url=readiness_url,
                 runningregex=runningregex
             )
 
@@ -1890,7 +1891,7 @@ class ProcessConfig(Config):
         'stopsignal', 'stopwaitsecs', 'stopasgroup', 'killasgroup',
         'exitcodes', 'redirect_stderr' ]
     optional_param_names = [ 'environment', 'serverurl',
-        'depends_on', 'spawn_timeout', 'runningregex' ]
+        'depends_on', 'spawn_timeout', 'readiness_url', 'runningregex' ]
 
     def __init__(self, options, **params):
         self.options = options
